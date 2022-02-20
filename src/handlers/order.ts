@@ -1,4 +1,5 @@
 import express, {Request, Response,  NextFunction} from "express";
+import { type } from "os";
 import { Order, OrderStore } from "../models/order";
 const store = new OrderStore();
 
@@ -27,12 +28,18 @@ const create = async(req: Request, res: Response, next: NextFunction)=>{
     try {
         const order : Order={
             id: -1,
-            userId: req.body.firstName,
+            userId: req.body.userId,
             status: false,
-            OrderProductsIds: -1
+            orderproducts: -1
         }
-        const productsIds =req.body.productsIds;
-        const quantities = req.body.quantities;
+        const productsIds: number[] =[];
+        req.body.productsIds.forEach((i: string)  => {
+            productsIds.push(Number.parseInt(i))
+        });
+        const quantities: number[] = [];
+        req.body.quantities.forEach((i: string)  => {
+            quantities.push(Number.parseInt(i))
+        });
         const createdOrder = await store.create(order, productsIds, quantities);
         res.send(createdOrder).end();
     } catch (err) {
@@ -55,7 +62,7 @@ const destroy = async(req: Request, res: Response, next: NextFunction)=>{
 const update = async(req: Request, res: Response, next: NextFunction)=>{
     try {
         
-        const id= req.body.id;
+        const id= Number.parseInt(req.params.id);
         const status= req.body.status;
         const updated = await store.update(id, status);
         res.send(updated).end();
@@ -74,3 +81,7 @@ const orderRoutes = express.Router();
 
 
 export default orderRoutes;
+
+function element(element: any, arg1: (String: any) => void) {
+    throw new Error("Function not implemented.");
+}

@@ -5,7 +5,6 @@ const store = new ProductStore();
 
 const index = async(req: Request, res: Response, next: NextFunction)=>{
     try {
-        console.log("product index called");
         const products = await store.index();
         res.json(products).end;
     } catch (err) {
@@ -54,9 +53,9 @@ const destroy = async(req: Request, res: Response, next: NextFunction)=>{
 }
 
 const update = async(req: Request, res: Response, next: NextFunction)=>{
-    try {
+    try {       
         const product:Product ={
-            id: req.body.id,
+            id: Number.parseInt(req.params.id),
             name: req.body.name,
             price: req.body.price,
             category: req.body.category
@@ -74,6 +73,6 @@ const productRoutes = express.Router();
     productRoutes.post('/', create);
     productRoutes.get('/', index);
     productRoutes.delete('/:id', destroy);
-    productRoutes.put('/:id', update)
+    productRoutes.put('/:id', update);
 
 export default productRoutes;

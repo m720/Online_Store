@@ -4,7 +4,7 @@ export type Order ={
     id: number;
     userId: number;
     status: Boolean;
-    OrderProductsIds: number;
+    orderproducts: number;
 };
 
 export class OrderStore {
@@ -33,14 +33,15 @@ export class OrderStore {
     async create (o: Order, productsIds: number[], quantities: number[]): Promise<Order>{
         try {
             const conn= await client.connect();
-            const sql = 'INSERT INTO orders(userId, status, OrderProducts) VALUES($1, $2, $3) RETURNING *;';
-            const result = await conn.query(sql, [o.userId, o.status, o.OrderProductsIds]);
-            const order = result.rows[0];
+            const sql = 'INSERT INTO orders(userId, status) VALUES($1, $2) RETURNING *;';
+            const result = await conn.query(sql, [o.userId, o.status]);
+            const order = result.rows[0];            
             const sql2 = 'INSERT INTO Order_Products (orderId, productId, quantity) VALUES($1, $2, $3) RETURNING *;'
             const result2 =await conn.query(sql2,[order.id,productsIds,quantities]);
             const orderProducts =result2.rows[0];
-            const sql3 = 'UPDATE orders SET OrderProducts= $1 WHERE id=$2 RETURNING *;'
-            conn.query(sql3, [orderProducts.id, order.id]);
+            const sql3 = 'UPDATE orders SET orderproducts=$1 WHERE id=$2 RETURNING *;'
+            const result3 = await conn.query(sql3, [orderProducts.id, order.id]);
+            order.orderproducts = orderProducts.id
             conn.release();
             return order;
         } catch (err) {
@@ -63,7 +64,7 @@ export class OrderStore {
         //this updates order status only
         try {
             const conn= await client.connect();
-            const sql = 'UPDATE products SET status= $1, WHERE id=$2 RETURNING *;';
+            const sql = 'UPDATE orders SET status= $1 WHERE id=$2 RETURNING *;';
             const result = await conn.query(sql, [status, id]);
             const order = result.rows[0];
             conn.release();

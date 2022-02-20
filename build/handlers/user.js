@@ -13,43 +13,44 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const product_1 = require("../models/product");
-const store = new product_1.ProductStore();
+const user_1 = require("../models/user");
+const store = new user_1.UserStore();
 const index = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const products = yield store.index();
-        res.json(products).end;
+        const users = yield store.index();
+        res.json(users).end;
     }
     catch (err) {
-        res.status(400);
-        res.send(`could not find products ${err}`);
+        res.status(404);
+        res.send(`could not find users ${err}`);
     }
 });
 const show = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const productId = Number.parseInt(req.params.id);
-        const product = yield store.show(productId);
-        res.send(product).end();
+        const userID = Number.parseInt(req.params.id);
+        const user = yield store.show(userID);
+        res.send(user).end();
     }
     catch (err) {
-        res.status(400);
-        res.send(`could not find the product ${err}`);
+        res.status(404);
+        res.send(`could not find the User ${err}`);
     }
 });
 const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    //to-do hash& tokens
     try {
-        const product = {
+        const user = {
             id: -1,
-            name: req.body.name,
-            price: req.body.price,
-            category: req.body.category
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            password: req.body.password
         };
-        const createdProduct = yield store.create(product);
-        res.send(createdProduct).end();
+        const createdUser = yield store.create(user);
+        res.send(createdUser).end();
     }
     catch (err) {
         res.status(400);
-        res.send(`could not create the product ${err}`);
+        res.send(`could not create the user ${err}`);
     }
 });
 const destroy = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -59,29 +60,41 @@ const destroy = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     }
     catch (err) {
         res.status(400);
-        res.send(`could not delete the product ${err}`);
+        res.send(`could not delete the user ${err}`);
     }
 });
 const update = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const product = {
-            id: Number.parseInt(req.params.id),
-            name: req.body.name,
-            price: req.body.price,
-            category: req.body.category
+        const user = {
+            id: req.body.id,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            password: req.body.password
         };
-        const updated = yield store.update(product);
+        const updated = yield store.update(user);
         res.send(updated).end();
     }
     catch (err) {
         res.status(400);
-        res.send(`could not update the product ${err}`);
+        res.send(`could not update the user ${err}`);
     }
 });
-const productRoutes = express_1.default.Router();
-productRoutes.get('/:id', show);
-productRoutes.post('/', create);
-productRoutes.get('/', index);
-productRoutes.delete('/:id', destroy);
-productRoutes.put('/:id', update);
-exports.default = productRoutes;
+const showUserOrders = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const Orders = yield store.showUserOrders(Number.parseInt(id));
+        res.send(Orders).end();
+    }
+    catch (err) {
+        res.status(404);
+        res.send(`could not find Orders ${err}`);
+    }
+});
+const userRoutes = express_1.default.Router();
+userRoutes.get('/:id', show);
+userRoutes.post('/', create);
+userRoutes.get('/', index);
+userRoutes.delete('/:id', destroy);
+userRoutes.put('/:id', update);
+userRoutes.get('/:id/orders', showUserOrders);
+exports.default = userRoutes;

@@ -5,7 +5,6 @@ const store = new UserStore();
 
 const index = async(req: Request, res: Response, next: NextFunction)=>{
     try {
-        console.log("product index called");
         const users = await store.index();
         res.json(users).end;
     } catch (err) {
@@ -71,8 +70,8 @@ const update = async(req: Request, res: Response, next: NextFunction)=>{
 
 const showUserOrders = async(req: Request, res: Response, next: NextFunction)=>{
     try {
-        const id = req.body.id;
-        const Orders = await store.showUserOrders(id);
+        const id = req.params.id;
+        const Orders = await store.showUserOrders(Number.parseInt(id));
         res.send(Orders).end();
     } catch (err) {
         res.status(404);

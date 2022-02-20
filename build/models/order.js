@@ -43,13 +43,19 @@ class OrderStore {
             }
         });
     }
-    create(o) {
+    create(o, productsIds, quantities) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'INSERT INTO orders(userId, status, OrderProducts) VALUES($1, $2, $3) RETURNING *;';
-                const result = yield conn.query(sql, [o.userId, o.status, o.OrderProducts]);
+                const sql = 'INSERT INTO orders(userId, status) VALUES($1, $2) RETURNING *;';
+                const result = yield conn.query(sql, [o.userId, o.status]);
                 const order = result.rows[0];
+                const sql2 = 'INSERT INTO Order_Products (orderId, productId, quantity) VALUES($1, $2, $3) RETURNING *;';
+                const result2 = yield conn.query(sql2, [order.id, productsIds, quantities]);
+                const orderProducts = result2.rows[0];
+                const sql3 = 'UPDATE orders SET orderproducts=$1 WHERE id=$2 RETURNING *;';
+                const result3 = yield conn.query(sql3, [orderProducts.id, order.id]);
+                order.orderproducts = orderProducts.id;
                 conn.release();
                 return order;
             }
@@ -70,6 +76,22 @@ class OrderStore {
             }
             catch (err) {
                 throw new Error(`could not delete Order. ${err}`);
+            }
+        });
+    }
+    update(id, status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //this updates order status only
+            try {
+                const conn = yield database_1.default.connect();
+                const sql = 'UPDATE orders SET status= $1 WHERE id=$2 RETURNING *;';
+                const result = yield conn.query(sql, [status, id]);
+                const order = result.rows[0];
+                conn.release();
+                return order;
+            }
+            catch (err) {
+                throw new Error(`could not update order. ERR: ${err}`);
             }
         });
     }

@@ -50,12 +50,6 @@ class ProductStore {
                 const sql = 'INSERT INTO products(name, price, category) VALUES($1, $2, $3) RETURNING *;';
                 const result = yield conn.query(sql, [p.name, p.price, p.category]);
                 const pr = result.rows[0];
-                // const product: Product= {
-                //     id: pr.id,
-                //     name: pr.name,
-                //     price: pr.price,
-                //     category: pr.category
-                // }
                 conn.release();
                 return pr;
             }
@@ -76,6 +70,21 @@ class ProductStore {
             }
             catch (err) {
                 throw new Error(`could not delete Product. ${err}`);
+            }
+        });
+    }
+    update(p) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conn = yield database_1.default.connect();
+                const sql = 'UPDATE products SET name=$1, price= $2, category=$3 WHERE id=$4 RETURNING *;';
+                const result = yield conn.query(sql, [p.name, p.price, p.category, p.id]);
+                const pr = result.rows[0];
+                conn.release();
+                return pr;
+            }
+            catch (err) {
+                throw new Error(`could not update product. ERR: ${err}`);
             }
         });
     }
