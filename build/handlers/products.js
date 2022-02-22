@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const product_1 = require("../models/product");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const store = new product_1.ProductStore();
 const index = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -78,10 +79,23 @@ const update = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         res.send(`could not update the product ${err}`);
     }
 });
+const VerifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    try {
+        const authorizationHeader = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
+        const token = authorizationHeader.split(' ')[1];
+        jsonwebtoken_1.default.verify(token, (_b = process.env.TOKEN_SECRET) !== null && _b !== void 0 ? _b : 'randomtoken');
+        next();
+    }
+    catch (err) {
+        res.status(401);
+        res.json(`invalid token ${err}`);
+    }
+});
 const productRoutes = express_1.default.Router();
 productRoutes.get('/:id', show);
-productRoutes.post('/', create);
+productRoutes.post('/', VerifyToken, create);
 productRoutes.get('/', index);
-productRoutes.delete('/:id', destroy);
-productRoutes.put('/:id', update);
+productRoutes.delete('/:id', VerifyToken, destroy);
+productRoutes.put('/:id', VerifyToken, update);
 exports.default = productRoutes;

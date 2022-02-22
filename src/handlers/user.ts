@@ -1,5 +1,6 @@
 import express, {Request, Response,  NextFunction} from "express";
 import { User, UserStore} from "../models/user";
+import jwt from 'jsonwebtoken';
 
 const store = new UserStore();
 
@@ -33,8 +34,8 @@ const create = async(req: Request, res: Response, next: NextFunction)=>{
             lastName: req.body.lastName,
             password: req.body.password
         }
-        const createdUser = await store.create(user);
-        res.send(createdUser).end();
+        const createdUserToken:String = await store.create(user);
+        res.send(createdUserToken).end();
     } catch (err) {
         res.status(400);
         res.send(`could not create the user ${err}`)
@@ -75,17 +76,44 @@ const showUserOrders = async(req: Request, res: Response, next: NextFunction)=>{
         res.send(Orders).end();
     } catch (err) {
         res.status(404);
-        res.send(`could not find Orders ${err}`)
+        res.send(`could not find Orders ${err}`);
     }
 }
+
+const authenticate = async(req: Request, res: Response, next: NextFunction)=>{
+    try {
+        const id: number = Number.parseInt(req.body.id);
+        const password: string =req.body.password;
+        const user = await store.authenticate(id, password);
+        res.send(user).end();
+    } catch (err) {
+        res.status(404);
+        res.send(`${err}`);
+    }
+}
+
+const VerifyToken =async(req: Request, res: Response, next: NextFunction)=>{
+    try{
+        const authorizationHeader: String = req.headers.authorization??'';
+        const token = authorizationHeader.split(' ')[1];
+        jwt.verify(token, process.env.TOKEN_SECRET??'randomtoken');
+        
+        next();
+    }catch(err){
+        res.status(401);
+        res.json(`invalid token ${err}`);
+    }
+}
+ 
 
 const userRoutes = express.Router();
     userRoutes.get('/:id', show);
     userRoutes.post('/', create);
     userRoutes.get('/', index);
-    userRoutes.delete('/:id', destroy);
-    userRoutes.put('/:id', update);
-    userRoutes.get('/:id/orders', showUserOrders);
+    userRoutes.delete('/:id', VerifyToken, destroy);
+    userRoutes.put('/:id', VerifyToken, update);
+    userRoutes.get('/:id/orders', VerifyToken, showUserOrders);
+    userRoutes.post('/authenticate',authenticate);
 
 
 export default userRoutes;

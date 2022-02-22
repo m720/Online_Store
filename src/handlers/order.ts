@@ -1,6 +1,7 @@
 import express, {Request, Response,  NextFunction} from "express";
 import { type } from "os";
 import { Order, OrderStore } from "../models/order";
+import jwt from 'jsonwebtoken';
 const store = new OrderStore();
 
 const index = async(req: Request, res: Response, next: NextFunction)=>{
@@ -71,13 +72,26 @@ const update = async(req: Request, res: Response, next: NextFunction)=>{
         res.send(`could not update the Order ${err}`);
     }
 }
+const VerifyToken =async(req: Request, res: Response, next: NextFunction)=>{
+    try{
+        const authorizationHeader: String = req.headers.authorization??'';
+        const token = authorizationHeader.split(' ')[1];
+        jwt.verify(token, process.env.TOKEN_SECRET??'randomtoken');
+        
+        next();
+    }catch(err){
+        res.status(401);
+        res.json(`invalid token ${err}`);
+    }
+}
+ 
 
 const orderRoutes = express.Router();
     orderRoutes.get('/:id', show);
-    orderRoutes.post('/', create);
+    orderRoutes.post('/', VerifyToken,create);
     orderRoutes.get('/', index);
-    orderRoutes.delete('/:id', destroy);
-    orderRoutes.put('/:id', update);
+    orderRoutes.delete('/:id', VerifyToken,destroy);
+    orderRoutes.put('/:id', VerifyToken,update);
 
 
 export default orderRoutes;

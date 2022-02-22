@@ -15,7 +15,7 @@ const {
     const client = new Pool({
         host: DB_HOST,
         user: DB_USER,
-        database : (ENV==='dev')? DB_NAME: DB_TEST_NAME,
+        database: (ENV==='dev')? DB_NAME: DB_TEST_NAME,
         password: DB_PASS
     })
 

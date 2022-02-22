@@ -1,12 +1,24 @@
 import client from '../database';
 import { Order } from './order';
-
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 export type User ={
     id: number;
     firstName: string;
     lastName: string;
-    password: number;
+    password: string;
 };
+
+type Extra= {
+    pepper: string;
+    saltRounds:string;
+    token_secret:string;
+}
+
+const pepper= process.env.BCRYPT_PASSWORD ?? 'random_pass' ;
+const saltRounds=process.env.SALT_ROUNDS ?? '10';
+const token_secret = process.env.TOKEN_SECRET?? 'randomtoken';
+
 
 export class UserStore {
     async index(): Promise <User[]>{
@@ -31,15 +43,22 @@ export class UserStore {
             throw new Error(`Could not find user ${id}. Error: ${err}`);
         }
     }
-    async create (u: User): Promise<User>{
+    async create (u: User): Promise<String>{
         try {
             //to do: hash& token
             const conn= await client.connect();
             const sql = 'INSERT INTO users(firstName, lastName, password) VALUES($1, $2, $3) RETURNING *;';
-            const result = await conn.query(sql, [u.firstName, u.lastName, u.password]);
+            const hash= bcrypt.hashSync(u.password+ pepper, parseInt(saltRounds))
+            const result = await conn.query(sql, [u.firstName, u.lastName, hash]);
             const user = result.rows[0];
+
+             //Generating JWT token
+                const token = jwt.sign(user,token_secret);
+
+
+
             conn.release();
-            return user;
+            return token;
         } catch (err) {
             throw new Error(`could not create user. ERR: ${err}`);
 
@@ -79,6 +98,24 @@ export class UserStore {
             return result.rows;
         } catch (err) {
             throw new Error(`Could not find Orders ${err}`);
+        }
+    }
+    
+    async authenticate(id: number, password: string ): Promise<User>{
+        try {
+            const conn= await client.connect();
+            const sql = 'SELECT password from users where id = $1';
+            const result = await conn.query(sql, [id]);
+            conn.release();
+            if(result.rows.length){
+                const user: User = result.rows[0];
+                if(bcrypt.compareSync(password+pepper, user.password)){
+                    return user;
+                }
+            }
+                throw new Error('user not found');
+        } catch (error) {
+            throw new Error(`${error}`);
         }
     }
 }

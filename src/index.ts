@@ -3,6 +3,7 @@ import productRoutes from "./handlers/products";
 import userRoutes from "./handlers/user";
 import orderRoutes from "./handlers/order";
 import bodyParser from "body-parser";
+import cors from 'cors';
 
 const app = express();
 const urlencodedParser =bodyParser.urlencoded({ extended: false });

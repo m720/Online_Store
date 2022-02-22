@@ -1,5 +1,6 @@
 import express, {Request, Response,  NextFunction} from "express";
 import { ProductStore, Product } from "../models/product";
+import jwt from 'jsonwebtoken';
 
 const store = new ProductStore();
 
@@ -67,12 +68,24 @@ const update = async(req: Request, res: Response, next: NextFunction)=>{
         res.send(`could not update the product ${err}`)
     }
 }
-
+const VerifyToken =async(req: Request, res: Response, next: NextFunction)=>{
+    try{
+        const authorizationHeader: String = req.headers.authorization??'';
+        const token = authorizationHeader.split(' ')[1];
+        jwt.verify(token, process.env.TOKEN_SECRET??'randomtoken');
+        
+        next();
+    }catch(err){
+        res.status(401);
+        res.json(`invalid token ${err}`);
+    }
+}
+ 
 const productRoutes = express.Router();
     productRoutes.get('/:id', show);
-    productRoutes.post('/', create);
+    productRoutes.post('/', VerifyToken,create);
     productRoutes.get('/', index);
-    productRoutes.delete('/:id', destroy);
-    productRoutes.put('/:id', update);
+    productRoutes.delete('/:id', VerifyToken,destroy);
+    productRoutes.put('/:id', VerifyToken,update);
 
 export default productRoutes;
