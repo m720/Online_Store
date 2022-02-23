@@ -33,7 +33,6 @@
     "@types/nodemon": "^1.19.1",
     "@types/pg": "^8.6.4",
     "@types/prettier": "^2.4.3",
-    "@types/sharp": "^0.29.5",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",
@@ -69,7 +68,6 @@
     "node-cache": "^5.1.2",
     "pg": "^8.7.1",
     "request": "^2.88.2",
-    "sharp": "^0.29.3",
     "ts-watch": "^1.0.8"
   }
 }
