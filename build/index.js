@@ -13,8 +13,13 @@ const urlencodedParser = body_parser_1.default.urlencoded({ extended: false });
 const jsonParser = body_parser_1.default.json();
 app.use(urlencodedParser);
 app.use(jsonParser);
-app.use('/products', products_1.default);
-app.use('/users', user_1.default);
-app.use('/orders', order_1.default);
+app.use("/products", products_1.default);
+app.use("/users", user_1.default);
+app.use("/orders", order_1.default);
+app.use("/", (req, res, next) => {
+    res.status(200).json({ name: "hello" });
+    res.end();
+});
 app.listen(3000);
 console.log("app is running on http://localhost:3000");
+exports.default = app;

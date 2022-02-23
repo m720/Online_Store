@@ -19,7 +19,7 @@ class OrderStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'SELECT * from orders;';
+                const sql = "SELECT * from orders;";
                 const result = yield conn.query(sql);
                 conn.release();
                 return result.rows;
@@ -33,7 +33,7 @@ class OrderStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'SELECT * from orders WHERE id =($1);';
+                const sql = "SELECT * from orders WHERE id =($1);";
                 const result = yield conn.query(sql, [id]);
                 conn.release();
                 return result.rows[0];
@@ -47,14 +47,18 @@ class OrderStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'INSERT INTO orders(userId, status) VALUES($1, $2) RETURNING *;';
-                const result = yield conn.query(sql, [o.userId, o.status]);
+                const sql = "INSERT INTO orders(user_id, status) VALUES($1, $2) RETURNING *;";
+                const result = yield conn.query(sql, [o.user_id, o.status]);
                 const order = result.rows[0];
-                const sql2 = 'INSERT INTO Order_Products (orderId, productId, quantity) VALUES($1, $2, $3) RETURNING *;';
-                const result2 = yield conn.query(sql2, [order.id, productsIds, quantities]);
+                const sql2 = "INSERT INTO Order_Products (order_id, product_id, quantity) VALUES($1, $2, $3) RETURNING *;";
+                const result2 = yield conn.query(sql2, [
+                    order.id,
+                    productsIds,
+                    quantities,
+                ]);
                 const orderProducts = result2.rows[0];
-                const sql3 = 'UPDATE orders SET orderproducts=$1 WHERE id=$2 RETURNING *;';
-                const result3 = yield conn.query(sql3, [orderProducts.id, order.id]);
+                const sql3 = "UPDATE orders SET orderproducts=$1 WHERE id=$2 RETURNING *;";
+                yield conn.query(sql3, [orderProducts.id, order.id]);
                 order.orderproducts = orderProducts.id;
                 conn.release();
                 return order;
@@ -67,12 +71,11 @@ class OrderStore {
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const sql = 'DELETE FROM Orders WHERE id=($1);';
+                const sql = "DELETE FROM Orders WHERE id=($1);";
                 const conn = yield database_1.default.connect();
-                const result = yield database_1.default.query(sql, [id]);
-                const order = result.rows[0];
+                yield database_1.default.query(sql, [id]);
                 conn.release();
-                return order;
+                return "Deleted";
             }
             catch (err) {
                 throw new Error(`could not delete Order. ${err}`);
@@ -81,10 +84,10 @@ class OrderStore {
     }
     update(id, status) {
         return __awaiter(this, void 0, void 0, function* () {
-            //this updates order status only
+            // this updates order status only
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'UPDATE orders SET status= $1 WHERE id=$2 RETURNING *;';
+                const sql = "UPDATE orders SET status= $1 WHERE id=$2 RETURNING *;";
                 const result = yield conn.query(sql, [status, id]);
                 const order = result.rows[0];
                 conn.release();

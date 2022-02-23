@@ -19,7 +19,7 @@ class ProductStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'SELECT * from products;';
+                const sql = "SELECT * from products;";
                 const result = yield conn.query(sql);
                 conn.release();
                 return result.rows;
@@ -33,7 +33,7 @@ class ProductStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'SELECT * from products WHERE id =($1);';
+                const sql = "SELECT * from products WHERE id =($1);";
                 const result = yield conn.query(sql, [id]);
                 conn.release();
                 return result.rows[0];
@@ -47,7 +47,7 @@ class ProductStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'INSERT INTO products(name, price, category) VALUES($1, $2, $3) RETURNING *;';
+                const sql = "INSERT INTO products(name, price, category) VALUES($1, $2, $3) RETURNING *;";
                 const result = yield conn.query(sql, [p.name, p.price, p.category]);
                 const pr = result.rows[0];
                 conn.release();
@@ -61,12 +61,11 @@ class ProductStore {
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const sql = 'DELETE FROM products WHERE id=($1);';
+                const sql = "DELETE FROM products WHERE id=($1);";
                 const conn = yield database_1.default.connect();
-                const result = yield database_1.default.query(sql, [id]);
-                const pr = result.rows[0];
+                yield database_1.default.query(sql, [id]);
                 conn.release();
-                return pr;
+                return "Deleted";
             }
             catch (err) {
                 throw new Error(`could not delete Product. ${err}`);
@@ -77,7 +76,7 @@ class ProductStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'UPDATE products SET name=$1, price= $2, category=$3 WHERE id=$4 RETURNING *;';
+                const sql = "UPDATE products SET name=$1, price= $2, category=$3 WHERE id=$4 RETURNING *;";
                 const result = yield conn.query(sql, [p.name, p.price, p.category, p.id]);
                 const pr = result.rows[0];
                 conn.release();

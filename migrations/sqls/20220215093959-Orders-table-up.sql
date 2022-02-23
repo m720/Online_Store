@@ -1,6 +1,6 @@
 CREATE TABLE Orders (id SERIAL PRIMARY KEY,
-                    userId INTEGER,
-                    CONSTRAINT FK_userId FOREIGN KEY (userId) REFERENCES users (id),
+                    user_id INTEGER NOT NULL,
+                    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
                     status BOOLEAN,
                     OrderProducts INTEGER
                     );

@@ -19,7 +19,7 @@ const store = new user_1.UserStore();
 const index = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const users = yield store.index();
-        res.json(users).end;
+        res.json(users);
     }
     catch (err) {
         res.status(404);
@@ -38,16 +38,16 @@ const show = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    //to-do hash& tokens
+    // to-do hash& tokens
     try {
         const user = {
             id: -1,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            password: req.body.password
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            password: req.body.password,
         };
         const createdUserToken = yield store.create(user);
-        res.send(createdUserToken).end();
+        res.send(createdUserToken);
     }
     catch (err) {
         res.status(400);
@@ -68,9 +68,9 @@ const update = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const user = {
             id: req.body.id,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            password: req.body.password
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            password: req.body.password,
         };
         const updated = yield store.update(user);
         res.send(updated).end();
@@ -106,9 +106,9 @@ const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
 const VerifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const authorizationHeader = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
-        const token = authorizationHeader.split(' ')[1];
-        jsonwebtoken_1.default.verify(token, (_b = process.env.TOKEN_SECRET) !== null && _b !== void 0 ? _b : 'randomtoken');
+        const authorizationHeader = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : "";
+        const token = authorizationHeader.split(" ")[1];
+        jsonwebtoken_1.default.verify(token, (_b = process.env.TOKEN_SECRET) !== null && _b !== void 0 ? _b : "randomtoken");
         next();
     }
     catch (err) {
@@ -117,11 +117,11 @@ const VerifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 const userRoutes = express_1.default.Router();
-userRoutes.get('/:id', show);
-userRoutes.post('/', create);
-userRoutes.get('/', index);
-userRoutes.delete('/:id', VerifyToken, destroy);
-userRoutes.put('/:id', VerifyToken, update);
-userRoutes.get('/:id/orders', VerifyToken, showUserOrders);
-userRoutes.post('/authenticate', authenticate);
+userRoutes.get("/:id", show);
+userRoutes.post("/", create);
+userRoutes.get("/", index);
+userRoutes.delete("/:id", VerifyToken, destroy);
+userRoutes.put("/:id", VerifyToken, update);
+userRoutes.get("/:id/orders", VerifyToken, showUserOrders);
+userRoutes.post("/authenticate", authenticate);
 exports.default = userRoutes;

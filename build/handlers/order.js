@@ -19,7 +19,7 @@ const store = new order_1.OrderStore();
 const index = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const orders = yield store.index();
-        res.json(orders).end;
+        res.json(orders);
     }
     catch (err) {
         res.status(404);
@@ -28,8 +28,8 @@ const index = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 });
 const show = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const orderID = Number.parseInt(req.params.id);
-        const order = yield store.show(orderID);
+        const order_id = Number.parseInt(req.params.id);
+        const order = yield store.show(order_id);
         res.send(order).end();
     }
     catch (err) {
@@ -41,9 +41,9 @@ const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const order = {
             id: -1,
-            userId: req.body.userId,
+            user_id: req.body.user_id,
             status: false,
-            orderproducts: -1
+            orderproducts: -1,
         };
         const productsIds = [];
         req.body.productsIds.forEach((i) => {
@@ -58,6 +58,7 @@ const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
     }
     catch (err) {
         res.status(400);
+        console.log(err);
         res.send(`could not create the Order ${err}`);
     }
 });
@@ -86,9 +87,9 @@ const update = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
 const VerifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const authorizationHeader = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
-        const token = authorizationHeader.split(' ')[1];
-        jsonwebtoken_1.default.verify(token, (_b = process.env.TOKEN_SECRET) !== null && _b !== void 0 ? _b : 'randomtoken');
+        const authorizationHeader = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : "";
+        const token = authorizationHeader.split(" ")[1];
+        jsonwebtoken_1.default.verify(token, (_b = process.env.TOKEN_SECRET) !== null && _b !== void 0 ? _b : "randomtoken");
         next();
     }
     catch (err) {
@@ -97,12 +98,9 @@ const VerifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 const orderRoutes = express_1.default.Router();
-orderRoutes.get('/:id', show);
-orderRoutes.post('/', VerifyToken, create);
-orderRoutes.get('/', index);
-orderRoutes.delete('/:id', VerifyToken, destroy);
-orderRoutes.put('/:id', VerifyToken, update);
+orderRoutes.get("/:id", show);
+orderRoutes.post("/", VerifyToken, create);
+orderRoutes.get("/", index);
+orderRoutes.delete("/:id", VerifyToken, destroy);
+orderRoutes.put("/:id", VerifyToken, update);
 exports.default = orderRoutes;
-function element(element, arg1) {
-    throw new Error("Function not implemented.");
-}

@@ -4,12 +4,15 @@
   "description": "phase 1 project fwd",
   "main": "./build/index.js",
   "scripts": {
-    "test": "SET ENV=test db-migrate --env test up && npm run build && jasmine && db-migrate db: drop test",
+    "setEnv":"set NODE_ENV=test && db-migrate --env test reset",
+    "resetenv": "db-migrate --env test reset",
+    "test": "set NODE_ENV=test && npm run resetenv &&db-migrate --env test  up && npm run build && jasmine && db-migrate --env test reset",
     "build": "npx tsc",
     "jasmine": "jasmine",
     "lint": "eslint . --ext .ts ",
     "prettier": "prettier --write ./src/**/*.ts",
-    "start": "npm run build && node ./build"
+    "migrate": "db-migrate up",
+    "start": "db-migrate up && npm run build && node ./build"
   },
   "repository": {
     "type": "git",

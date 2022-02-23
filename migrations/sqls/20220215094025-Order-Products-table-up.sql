@@ -1,6 +1,7 @@
 CREATE TABLE Order_Products (id SERIAL PRIMARY KEY,
-                    orderId INTEGER,
-                    CONSTRAINT FK_orderId FOREIGN Key(id) REFERENCES orders(id), 
-                    productId INTEGER[],
+                    order_id INTEGER NOT NULL,
+                    FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
+                    product_id INTEGER[],
                     quantity INTEGER[]
                     );
+                

@@ -19,7 +19,7 @@ const store = new product_1.ProductStore();
 const index = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const products = yield store.index();
-        res.json(products).end;
+        res.json(products);
     }
     catch (err) {
         res.status(400);
@@ -28,8 +28,8 @@ const index = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 });
 const show = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const productId = Number.parseInt(req.params.id);
-        const product = yield store.show(productId);
+        const product_id = Number.parseInt(req.params.id);
+        const product = yield store.show(product_id);
         res.send(product).end();
     }
     catch (err) {
@@ -43,7 +43,7 @@ const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             id: -1,
             name: req.body.name,
             price: req.body.price,
-            category: req.body.category
+            category: req.body.category,
         };
         const createdProduct = yield store.create(product);
         res.send(createdProduct).end();
@@ -69,7 +69,7 @@ const update = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             id: Number.parseInt(req.params.id),
             name: req.body.name,
             price: req.body.price,
-            category: req.body.category
+            category: req.body.category,
         };
         const updated = yield store.update(product);
         res.send(updated).end();
@@ -82,9 +82,9 @@ const update = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
 const VerifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const authorizationHeader = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : '';
-        const token = authorizationHeader.split(' ')[1];
-        jsonwebtoken_1.default.verify(token, (_b = process.env.TOKEN_SECRET) !== null && _b !== void 0 ? _b : 'randomtoken');
+        const authorizationHeader = (_a = req.headers.authorization) !== null && _a !== void 0 ? _a : "";
+        const token = authorizationHeader.split(" ")[1];
+        jsonwebtoken_1.default.verify(token, (_b = process.env.TOKEN_SECRET) !== null && _b !== void 0 ? _b : "randomtoken");
         next();
     }
     catch (err) {
@@ -93,9 +93,9 @@ const VerifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 const productRoutes = express_1.default.Router();
-productRoutes.get('/:id', show);
-productRoutes.post('/', VerifyToken, create);
-productRoutes.get('/', index);
-productRoutes.delete('/:id', VerifyToken, destroy);
-productRoutes.put('/:id', VerifyToken, update);
+productRoutes.get("/:id", show);
+productRoutes.post("/", VerifyToken, create);
+productRoutes.get("/", index);
+productRoutes.delete("/:id", VerifyToken, destroy);
+productRoutes.put("/:id", VerifyToken, update);
 exports.default = productRoutes;

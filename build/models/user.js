@@ -17,15 +17,15 @@ exports.UserStore = void 0;
 const database_1 = __importDefault(require("../database"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const pepper = (_a = process.env.BCRYPT_PASSWORD) !== null && _a !== void 0 ? _a : 'random_pass';
-const saltRounds = (_b = process.env.SALT_ROUNDS) !== null && _b !== void 0 ? _b : '10';
-const token_secret = (_c = process.env.TOKEN_SECRET) !== null && _c !== void 0 ? _c : 'randomtoken';
+const pepper = (_a = process.env.BCRYPT_PASSWORD) !== null && _a !== void 0 ? _a : "random_pass";
+const saltRounds = (_b = process.env.SALT_ROUNDS) !== null && _b !== void 0 ? _b : "10";
+const tokenSecret = (_c = process.env.TOKEN_SECRET) !== null && _c !== void 0 ? _c : "randomtoken";
 class UserStore {
     index() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'SELECT * from users;';
+                const sql = "SELECT * from users;";
                 const result = yield conn.query(sql);
                 conn.release();
                 return result.rows;
@@ -39,7 +39,7 @@ class UserStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'SELECT * from users WHERE id =($1);';
+                const sql = "SELECT * from users WHERE id =($1);";
                 const result = yield conn.query(sql, [id]);
                 conn.release();
                 return result.rows[0];
@@ -52,14 +52,14 @@ class UserStore {
     create(u) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                //to do: hash& token
+                // to do: hash& token
                 const conn = yield database_1.default.connect();
-                const sql = 'INSERT INTO users(firstName, lastName, password) VALUES($1, $2, $3) RETURNING *;';
+                const sql = "INSERT INTO users(firstname, lastname, password) VALUES($1, $2, $3) RETURNING *;";
                 const hash = bcrypt_1.default.hashSync(u.password + pepper, parseInt(saltRounds));
-                const result = yield conn.query(sql, [u.firstName, u.lastName, hash]);
+                const result = yield conn.query(sql, [u.firstname, u.lastname, hash]);
                 const user = result.rows[0];
-                //Generating JWT token
-                const token = jsonwebtoken_1.default.sign(user, token_secret);
+                // Generating JWT token
+                const token = jsonwebtoken_1.default.sign(user, tokenSecret);
                 conn.release();
                 return token;
             }
@@ -71,12 +71,11 @@ class UserStore {
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const sql = 'DELETE FROM users WHERE id=($1);';
+                const sql = "DELETE FROM users WHERE id=($1);";
                 const conn = yield database_1.default.connect();
-                const result = yield database_1.default.query(sql, [id]);
-                const pr = result.rows[0];
+                yield database_1.default.query(sql, [id]);
                 conn.release();
-                return pr;
+                return "Deleted";
             }
             catch (err) {
                 throw new Error(`could not delete user. ${err}`);
@@ -87,8 +86,14 @@ class UserStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'UPDATE users SET firstName=$1, lastName= $2, password=$3 WHERE id=$4 RETURNING *;';
-                const result = yield conn.query(sql, [u.firstName, u.lastName, u.password, u.id]);
+                const hash = bcrypt_1.default.hashSync(u.password + pepper, parseInt(saltRounds));
+                const sql = "UPDATE users SET firstname=$1, lastname= $2, password=$3 WHERE id=$4 RETURNING *;";
+                const result = yield conn.query(sql, [
+                    u.firstname,
+                    u.lastname,
+                    hash,
+                    u.id,
+                ]);
                 const user = result.rows[0];
                 conn.release();
                 return user;
@@ -102,7 +107,7 @@ class UserStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'SELECT * FROM orders WHERE userId =$1';
+                const sql = "SELECT * FROM orders WHERE user_id =$1";
                 const result = yield conn.query(sql, [id]);
                 conn.release();
                 return result.rows;
@@ -116,7 +121,7 @@ class UserStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const conn = yield database_1.default.connect();
-                const sql = 'SELECT password from users where id = $1';
+                const sql = "SELECT password from users where id = $1";
                 const result = yield conn.query(sql, [id]);
                 conn.release();
                 if (result.rows.length) {
@@ -125,7 +130,7 @@ class UserStore {
                         return user;
                     }
                 }
-                throw new Error('user not found');
+                throw new Error("user not found");
             }
             catch (error) {
                 throw new Error(`${error}`);
