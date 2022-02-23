@@ -1,6 +1,6 @@
 import supertest from "supertest";
 import app from "../../index";
-import { Order, OrderStore } from "../../models/order";
+import { OrderStore } from "../../models/order";
 const request = supertest(app);
 
 
@@ -8,9 +8,7 @@ describe("Order APIs",()=>{
 
     let token =''; // using let insted of const to be assigned later;
     beforeAll(async ()=>{
-    // this step is to get token to use it for authorization
-    console.log("this is create Order API");
-    
+    // this step is to get token to use it for authorization    
     const result = await request.post("/users")
     .set('Content-Type', 'application/json')
      .send({
@@ -49,36 +47,42 @@ describe("Order APIs",()=>{
         .set('Content-Type', 'application/json')
          .send({
             user_id: 1,
-            status: 0,
-            productsIds: [2,1],
-            quantities: [2,1]
+            status: false,
+            productsIds: [2,1 , 2],
+            quantities: [2 , 1]
+        
         }).auth(token, {type: "bearer"});
          
          expect(result.status).toBe(200);
      });
 
      it('Index Orders', async()=>{
-        const result = await request.get('/orders');
+        const result = await request.get('/orders')
+                            .auth(token, {type: "bearer"});
         
         expect(result.status).toBe(200);
-    })
+    });
 
     it('Show Order', async()=>{
-        const result = await request.get("/orders/"+ '1');
+        const result = await request.get("/orders/"+ '1')
+                            .auth(token, {type: "bearer"});
+
         expect(result.status).toBe(200);
     })
 
     it('Update Order', async()=>{
         const result = await request.put("/orders/"+"1")
                              .send({
-                               status:1
+                               status:true
                             }).auth(token, {type: "bearer"});
+
         expect(result.status).toBe(200);
     })
 
     it('Delete Order', async()=>{
         const result = await request.delete("/orders/"+"1")
                                 .auth(token, {type: "bearer"});
+
         expect(result.status).toBe(200);
         })
     
@@ -97,26 +101,31 @@ describe("Orders CURD",()=>{
         },[2,1],[2,1]);
         DBorderid = result.id;
         DBorderProducts = result.orderproducts;
+
         expect(result.user_id).toEqual(1);
     })
 
     it("DB index Orders",async ()=>{
         const result = await store.index();
+
         expect(typeof(result)).toBe("object");
     })
 
     it("DB Show Order", async()=>{
         const result = await store.show(DBorderid);
+
         expect(result.orderproducts).toBe(DBorderProducts);
     })
 
     it("DB Update Order",async () => {
         const result = await store.update(DBorderid, true);
+
         expect(result.orderproducts).toBe(DBorderProducts);
     })
 
     it("DB delete Orders", async ()=>{
         const result = await store.delete(DBorderid);
+
         expect(result).toBe("Deleted");
     })
 

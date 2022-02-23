@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import { User, UserStore } from "../models/user";
 import jwt from "jsonwebtoken";
+import { VCreateUser } from "../validators/user.validator";
 
 const store = new UserStore();
 
@@ -114,11 +115,11 @@ const VerifyToken = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const userRoutes = express.Router();
-userRoutes.get("/:id", show);
-userRoutes.post("/", create);
-userRoutes.get("/", index);
+userRoutes.get("/:id",VerifyToken ,show);
+userRoutes.post("/", VCreateUser, create);
+userRoutes.get("/", VerifyToken, index);
 userRoutes.delete("/:id", VerifyToken, destroy);
-userRoutes.put("/:id", VerifyToken, update);
+userRoutes.put("/:id", VerifyToken, VCreateUser, update);
 userRoutes.get("/:id/orders", VerifyToken, showUserOrders);
 userRoutes.post("/authenticate", authenticate);
 

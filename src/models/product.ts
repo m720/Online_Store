@@ -51,7 +51,7 @@ export class ProductStore {
       const sql = "DELETE FROM products WHERE id=($1);";
       const conn = await client.connect();
       await client.query(sql, [id]);
-      
+
       conn.release();
       return "Deleted";
     } catch (err) {

@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import { Order, OrderStore } from "../models/order";
 import jwt from "jsonwebtoken";
+import { VCreateOrder, VupdateOrder } from "../validators/order.validator";
 const store = new OrderStore();
 
 const index = async (req: Request, res: Response, next: NextFunction) => {
@@ -45,7 +46,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
   } catch (err) {
     res.status(400);
     console.log(err);
-    
+
     res.send(`could not create the Order ${err}`);
   }
 };
@@ -85,10 +86,10 @@ const VerifyToken = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const orderRoutes = express.Router();
-orderRoutes.get("/:id", show);
-orderRoutes.post("/", VerifyToken, create);
-orderRoutes.get("/", index);
+orderRoutes.get("/:id",VerifyToken ,show);
+orderRoutes.post("/", VerifyToken, VCreateOrder, create);
+orderRoutes.get("/",VerifyToken ,index);
 orderRoutes.delete("/:id", VerifyToken, destroy);
-orderRoutes.put("/:id", VerifyToken, update);
+orderRoutes.put("/:id", VerifyToken, VupdateOrder, update);
 
 export default orderRoutes;

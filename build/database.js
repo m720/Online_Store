@@ -11,6 +11,6 @@ const client = new pg_1.Pool({
     host: DB_HOST,
     user: DB_USER,
     database: NODE_ENV === "dev" ? DB_NAME : DB_TEST_NAME,
-    password: DB_PASS
+    password: DB_PASS,
 });
 exports.default = client;

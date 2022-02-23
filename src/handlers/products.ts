@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import { ProductStore, Product } from "../models/product";
 import jwt from "jsonwebtoken";
+import { VCreateProduct } from "../validators/product.validator";
 
 const store = new ProductStore();
 
@@ -81,9 +82,9 @@ const VerifyToken = async (req: Request, res: Response, next: NextFunction) => {
 
 const productRoutes = express.Router();
 productRoutes.get("/:id", show);
-productRoutes.post("/", VerifyToken, create);
+productRoutes.post("/", VerifyToken, VCreateProduct, create);
 productRoutes.get("/", index);
 productRoutes.delete("/:id", VerifyToken, destroy);
-productRoutes.put("/:id", VerifyToken, update);
+productRoutes.put("/:id", VerifyToken, VCreateProduct, update);
 
 export default productRoutes;

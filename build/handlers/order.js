@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const order_1 = require("../models/order");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const order_validator_1 = require("../validators/order.validator");
 const store = new order_1.OrderStore();
 const index = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -98,9 +99,9 @@ const VerifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 const orderRoutes = express_1.default.Router();
-orderRoutes.get("/:id", show);
-orderRoutes.post("/", VerifyToken, create);
-orderRoutes.get("/", index);
+orderRoutes.get("/:id", VerifyToken, show);
+orderRoutes.post("/", VerifyToken, order_validator_1.VCreateOrder, create);
+orderRoutes.get("/", VerifyToken, index);
 orderRoutes.delete("/:id", VerifyToken, destroy);
-orderRoutes.put("/:id", VerifyToken, update);
+orderRoutes.put("/:id", VerifyToken, order_validator_1.VupdateOrder, update);
 exports.default = orderRoutes;

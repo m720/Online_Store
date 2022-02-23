@@ -84,10 +84,8 @@ export class UserStore {
       const user = result.rows[0];
       conn.release();
 
-      
       return user;
     } catch (err) {
-
       throw new Error(`could not update user. ERR: ${err}`);
     }
   }

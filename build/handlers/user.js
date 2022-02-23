@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const user_1 = require("../models/user");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const user_validator_1 = require("../validators/user.validator");
 const store = new user_1.UserStore();
 const index = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -117,11 +118,11 @@ const VerifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 const userRoutes = express_1.default.Router();
-userRoutes.get("/:id", show);
-userRoutes.post("/", create);
-userRoutes.get("/", index);
+userRoutes.get("/:id", VerifyToken, show);
+userRoutes.post("/", user_validator_1.VCreateUser, create);
+userRoutes.get("/", VerifyToken, index);
 userRoutes.delete("/:id", VerifyToken, destroy);
-userRoutes.put("/:id", VerifyToken, update);
+userRoutes.put("/:id", VerifyToken, user_validator_1.VCreateUser, update);
 userRoutes.get("/:id/orders", VerifyToken, showUserOrders);
 userRoutes.post("/authenticate", authenticate);
 exports.default = userRoutes;

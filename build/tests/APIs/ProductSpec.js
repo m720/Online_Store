@@ -23,8 +23,8 @@ describe("Products APIs", () => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield request.post("/users")
             .set('Content-Type', 'application/json')
             .send({
-            firstName: "ahmed",
-            lastName: "mahmoud",
+            firstname: "ahmed",
+            lastname: "mahmoud",
             password: "12345@Mh"
         });
         token = result.text;

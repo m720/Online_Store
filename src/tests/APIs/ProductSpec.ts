@@ -1,6 +1,6 @@
 import supertest from "supertest";
 import app from "../../index";
-import { Product, ProductStore } from "../../models/product";
+import {ProductStore } from "../../models/product";
 const request = supertest(app);
 
 describe("Products APIs", async ()=>{
@@ -10,8 +10,8 @@ describe("Products APIs", async ()=>{
     const result = await request.post("/users")
     .set('Content-Type', 'application/json')
      .send({
-     firstName: "ahmed",
-     lastName: "mahmoud",
+     firstname: "ahmed",
+     lastname: "mahmoud",
      password: "12345@Mh"
      });
      token = result.text; 
@@ -25,6 +25,7 @@ describe("Products APIs", async ()=>{
             price: 13,
             category: ["groc"]
         }).auth(token, {type: "bearer"});
+
         expect(result.status).toBe(200);
      });
 
@@ -36,6 +37,7 @@ describe("Products APIs", async ()=>{
 
     it('Show Product', async()=>{
         const result = await request.get("/products/"+ '4');
+
         expect(result.status).toBe(200);
     })
 
@@ -46,12 +48,14 @@ describe("Products APIs", async ()=>{
                                 price: 15,
                                 category: ["groc"]
                             }).auth(token, {type: "bearer"});
+
         expect(result.status).toBe(200);
     })
 
     it('Delete Product', async()=>{
         const result = await request.delete("/products/"+"4")
                                 .auth(token, {type: "bearer"});
+
         expect(result.status).toBe(200);
         })
 
@@ -69,17 +73,20 @@ describe("Products CURD", ()=>{
         id: -1
         });
         id =result.id
+
         expect(result.name).toEqual("DBproduct");
         expect(result.price).toEqual(19);
     })
 
     it("DB Index Products", async()=>{
         const result = await store.index();
+
         expect(typeof(result)).toBe("object")
     })
 
     it("DB Show Product", async()=>{
         const result = await store.show(id);
+
         expect(result.name).toEqual("DBproduct");
         expect(result.price).toEqual(19);
     })
@@ -91,11 +98,13 @@ describe("Products CURD", ()=>{
             category: ["cat2"],
             id: id
         });
+
         expect(result.name).toEqual("updatedDBProduct");
     })
 
     it("DB Delete Product", async()=>{
         const result = await store.delete(id);
+
         expect(result).toEqual("Deleted");
     })
 })

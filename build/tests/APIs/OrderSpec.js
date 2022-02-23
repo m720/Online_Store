@@ -19,8 +19,7 @@ const request = (0, supertest_1.default)(index_1.default);
 describe("Order APIs", () => {
     let token = ''; // using let insted of const to be assigned later;
     beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
-        // this step is to get token to use it for authorization
-        console.log("this is create Order API");
+        // this step is to get token to use it for authorization    
         const result = yield request.post("/users")
             .set('Content-Type', 'application/json')
             .send({
@@ -53,24 +52,26 @@ describe("Order APIs", () => {
             .set('Content-Type', 'application/json')
             .send({
             user_id: 1,
-            status: 0,
-            productsIds: [2, 1],
+            status: false,
+            productsIds: [2, 1, 2],
             quantities: [2, 1]
         }).auth(token, { type: "bearer" });
         expect(result.status).toBe(200);
     }));
     it('Index Orders', () => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield request.get('/orders');
+        const result = yield request.get('/orders')
+            .auth(token, { type: "bearer" });
         expect(result.status).toBe(200);
     }));
     it('Show Order', () => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield request.get("/orders/" + '1');
+        const result = yield request.get("/orders/" + '1')
+            .auth(token, { type: "bearer" });
         expect(result.status).toBe(200);
     }));
     it('Update Order', () => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield request.put("/orders/" + "1")
             .send({
-            status: 1
+            status: true
         }).auth(token, { type: "bearer" });
         expect(result.status).toBe(200);
     }));

@@ -1,11 +1,8 @@
-import { UserStore, User } from "../../models/user";
+import { UserStore} from "../../models/user";
 import supertest from "supertest";
 import app from "../../index";
-import bcrypt from 'bcrypt';
 
 const request = supertest(app);
-const pepper = process.env.BCRYPT_PASSWORD ?? "random_pass";
-const saltRounds = process.env.SALT_ROUNDS ?? "10";
 
 describe("Users DB CURD",()=>{
     const store = new UserStore();
@@ -17,16 +14,19 @@ describe("Users DB CURD",()=>{
             lastname: "mahmoud",
             password: "12345@Mh"
             });
-        expect(typeof(result)).toBe("string"); //cant compare the value as token value is unkown
+
+        expect(typeof(result)).toBe("string"); // cant compare the value as token value is unkown
     })
 
     it('DB Index Users', async()=>{
         const result = await store.index();
-        expect(typeof(result)).toBe("object"); //cant compare the value as pass value is unkown
+
+        expect(typeof(result)).toBe("object"); // cant compare the value as pass value is unkown
     })
 
     it('DB Show User', async()=>{
         const result = await store.show(1);
+
         expect(result.id).toBe(1); 
     })
 
@@ -37,7 +37,7 @@ describe("Users DB CURD",()=>{
             lastname: "mahmoud",
             password: "12345@Mh"
             });
-        const hashedPass = bcrypt.hashSync("12345@Mh" + pepper, parseInt(saltRounds));       
+
         expect(result.id).toEqual(1);
         expect(result.firstname).toEqual("ahmeddddddDB");
         expect(result.lastname).toEqual("mahmoud");
@@ -45,6 +45,7 @@ describe("Users DB CURD",()=>{
 
     it('DB Delete User', async()=>{
         const result = await store.delete(1);
+
         expect(result).toBe("Deleted");
     })
 })
@@ -59,22 +60,26 @@ describe("Users APIs", ()=>{
        const result = await request.post("/users")
        .set('Content-Type', 'application/json')
         .send({
-        firstname: "ahmedApi",
+        firstname: "ahme234d",
         lastname: "mahmoud",
-        password: "12345@Mh"
+        password: "dsfgsdfgasdg@Mh"
         });
         token = result.text;
+
         expect(result.status).toBe(200);
     });
 
     it('Index Users', async()=>{
-        const result = await request.get('/users');
+        const result = await request.get('/users')
+                            .auth(token, {type: "bearer"});
         
         expect(result.status).toBe(200);
     })
 
     it('Show User', async()=>{
-        const result = await request.get("/users/"+ '4');
+        const result = await request.get("/users/"+ '4')
+                            .auth(token, {type: "bearer"});
+
         expect(result.status).toBe(200);
     })
 
@@ -85,19 +90,21 @@ describe("Users APIs", ()=>{
                              "lastname": "mahmoud",
                              "password": "12345@Mh"
                             }).auth(token, {type: "bearer"});
+
         expect(result.status).toBe(200);
     })
     
     it('Show User Orders', async()=>{
     const result = await request.get("/users/"+"4"+"/orders")
                             .auth(token, {type: "bearer"});
+
     expect(result.status).toBe(200);
     })
 
-    // it('Delete User', async()=>{
-    //     const result = await request.delete("/users/"+"4")
-    //                             .auth(token, {type: "bearer"});
-    //     expect(result.status).toBe(200);
-    //     })
+    it('Delete User', async()=>{
+        const result = await request.delete("/users/"+"4")
+                                .auth(token, {type: "bearer"});
+        expect(result.status).toBe(200);
+        })
     
 })
