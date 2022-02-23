@@ -113,3 +113,29 @@ Bearer token token: jwt
 delete http://localhost:3000/orders/:id
 ### Authorization
 Bearer token token: jwt
+
+
+________________________________________________
+# database Schema
+## ERD
+![Online_Store_ERD](Online_Store_ERD.jpg)
+
+## Products table
+      id          | name           | price          | category
+:-------------    | :------------- | :------------- | :-------------
+SERIAL PRIMARY KEY| VARCHAR(100)   | FLOAT          | TEXT[]
+
+## Users table
+      id          | firstName      | lastName       | password
+:-------------    | :------------- | :------------- | :-------------
+SERIAL PRIMARY KEY| VARCHAR(100)   | VARCHAR(100)   | VARCHAR(100)
+
+## Orders table
+      id          | user_id        | status         | OrderProducts
+:-------------    | :------------- | :------------- | :-------------
+SERIAL PRIMARY KEY| INTEGER        | BOOLEAN        | INTEGER
+
+## Order_Products table
+      id          | order_id       | product_id     | quantity
+:-------------    | :------------- | :------------- | :-------------
+SERIAL PRIMARY KEY| INTEGER        | INTEGER[]      | INTEGER[]
